@@ -8,8 +8,8 @@ This PoW is used in Balsn CTF 2019.
 
 We support various languages to help you solve the obnoxious PoW.
 
-- [X] Python 2
-- [X] Python 3
+- [X] Python 2 (optimized by @RobinJadoul)
+- [X] Python 3 (optimized by @RobinJadoul)
 - [X] NodeJs
 - [X] Browser-based
 - [X] Ruby
