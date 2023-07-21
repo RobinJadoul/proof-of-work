@@ -1,68 +1,41 @@
-package pow
+package main
 
 import (
 	"crypto/sha256"
-	"errors"
 	"fmt"
+	"os"
+	"strconv"
+	"encoding/binary"
+	"math/bits"
 )
 
-// Solver is a pow solver
-type Solver struct {
-	SolverConfig
-}
-
-// SolverConfig is config struct for Solver
-type SolverConfig struct {
-	Prefix     string
-	Difficulty int
-}
-
-// New returns a POW solver
-func New(c SolverConfig) (*Solver, error) {
-	if c.Difficulty <= 0 {
-		return nil, errors.New("Difficulty should > 0")
-	}
-	return &Solver{
-		SolverConfig{
-			Prefix:     c.Prefix,
-			Difficulty: c.Difficulty,
-		},
-	}, nil
-}
-
-// Solve returns two fields,
-// @ret1 the number of iteration after solving the pow.
-// @ret2 binary form of the answer.
-func (s *Solver) Solve() (attempts int, binaryString string) {
+// Solve returns an integer, for which the decimal representation as a string is the solution to the PoW:
+//  binstr(sha256(prefix + str(i))).startswith("0"*difficulty)
+// @arg prefix The prefix for hashing
+// @arg difficulty The number of leading 0 bits wanted
+// @ret The solution to the PoW.
+func Solve(prefix string, difficulty int) int {
 	var i int
-	var ss string
 	for {
-		sum := sha256.Sum256([]byte(fmt.Sprintf("%s%v", s.Prefix, i)))
-		ss = toBinString(sum)
-		if isValid(ss, s.Difficulty) {
+		sum := sha256.Sum256([]byte(fmt.Sprintf("%s%v", prefix, i)))
+		if bits.LeadingZeros64(binary.BigEndian.Uint64(sum[:8])) >= difficulty {
 			break
 		}
 		i++
 	}
-	return i, ss
+	return i
 }
 
-func toBinString(s [sha256.Size]byte) string {
-	var ss string
-	for _, b := range s {
-		ss = fmt.Sprintf("%s%08b", ss, b)
+func main() {
+	if len(os.Args) != 3 {
+		fmt.Printf("Usage: %s <prefix> <difficulty>\n", os.Args[0])
+		return
 	}
-	return ss
-}
-
-func isValid(ss string, d int) bool {
-	for i := range ss {
-		if i >= d {
-			break
-		}
-		if ss[i] != '0' {
-			return false
-		}
+	dif, err := strconv.Atoi(os.Args[2])
+	if err != nil {
+		fmt.Printf("Difficulty is not a valid integer: %s\n", os.Args[2])
+		return
 	}
-	return true
+	i := Solve(os.Args[1], dif)
+	fmt.Println(i)
 }

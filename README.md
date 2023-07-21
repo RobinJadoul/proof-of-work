@@ -13,7 +13,7 @@ We support various languages to help you solve the obnoxious PoW.
 - [X] NodeJs
 - [X] Browser-based
 - [X] Ruby
-- [X] Go (contributed by [Lee Xun](https://github.com/LeeXun))
+- [X] Go (contributed by [Lee Xun](https://github.com/LeeXun), optimized by @RobinJadoul)
 - [ ] Rust
 - [ ] C/C++
 - [ ] Java
